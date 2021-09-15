@@ -31,8 +31,6 @@ func main() {
 		panic(err)
 	}
 
-	// cfg := ctrl.GetConfigOrDie()
-
 	v1alpha1.AddToScheme(scheme.Scheme)
 
 	crdConfig := *cfg
@@ -46,19 +44,25 @@ func main() {
 		panic(err)
 	}
 
-	ctx := context.TODO()
-	result := v1alpha1.ProjectList{}
-	err = exampleRestClient.
-		Get().
-		Resource("projects").
-		Do(ctx).
-		Into(&result)
+	res := v1alpha1.ProjectList{}
+	err = exampleRestClient.Get().Resource("projects").Do(context.TODO()).Into(&res)
+
 	if err != nil {
 		panic(err)
 	}
+	// clientSet, err := clientV1alpha1.NewForConfig(cfg)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	fmt.Println("got object successfully *************************")
-	fmt.Println(result.GetObjectKind())
-	fmt.Println(result.GroupVersionKind())
+	// res, err := clientSet.Projects("default").List(metav1.ListOptions{}, context.TODO())
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	fmt.Println("project found *****************")
+	fmt.Println(res.GetResourceVersion())
+	fmt.Println(res.GroupVersionKind().String())
+	fmt.Printf("projects found: %+v\n", res)
 
 }
