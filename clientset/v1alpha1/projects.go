@@ -15,7 +15,7 @@ type ProjectInterface interface {
 	Get(name string, options metav1.GetOptions) (*v1alpha1.Project, error)
 	Create(*v1alpha1.Project) (*v1alpha1.Project, error)
 	Watch(opts metav1.ListOptions) (watch.Interface, error)
-	// ...
+	Update(project *v1alpha1.Project, opts metav1.UpdateOptions) (*v1alpha1.Project, error)
 }
 
 type projectClient struct {
@@ -71,4 +71,16 @@ func (c *projectClient) Watch(opts metav1.ListOptions) (watch.Interface, error) 
 		Resource("projects").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Watch(context.TODO())
+}
+
+func (c *projectClient) Update(project *v1alpha1.Project, opts metav1.UpdateOptions) (*v1alpha1.Project, error) {
+	result := &v1alpha1.Project{}
+	err := c.restClient.Put().
+		Resource("projects").
+		Name(project.Name).
+		VersionedParams(&opts, scheme.ParameterCodec).
+		Body(project).
+		Do(context.TODO()).
+		Into(result)
+	return result, err
 }

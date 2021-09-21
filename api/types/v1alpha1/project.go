@@ -5,7 +5,7 @@ import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 //go:generate controller-gen object paths=$GOFILE
 
 type ProjectSpec struct {
-	Replicas int `json:"replicas"`
+	Replicas int32 `json:"replicas"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
