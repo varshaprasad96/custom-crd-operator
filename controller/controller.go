@@ -8,8 +8,9 @@ import (
 
 	"github.com/openshift/library-go/pkg/controller/factory"
 	"github.com/openshift/library-go/pkg/operator/events"
-	"github.com/varshaprasad96/custom-crd-operator/api/types/v1alpha1"
-	clientV1alpha1 "github.com/varshaprasad96/custom-crd-operator/clientset/v1alpha1"
+	"github.com/varshaprasad96/custom-crd-operator/pkg/apis/example.com/v1alpha1"
+	clientV1alpha1 "github.com/varshaprasad96/custom-crd-operator/pkg/generated/clientset/versioned/typed/example.com/v1alpha1"
+	opInformer "github.com/varshaprasad96/custom-crd-operator/pkg/generated/informers/externalversions/example.com/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -21,7 +22,7 @@ import (
 
 type TestController struct {
 	name           string
-	operatorClient *clientV1alpha1.ExampleV1Alpha1Client
+	operatorClient *clientV1alpha1.ExampleV1alpha1Client
 	kubeclient     kubernetes.Interface
 	deployInformer appsinformersv1.DeploymentInformer
 	recorder       events.Recorder
@@ -29,10 +30,11 @@ type TestController struct {
 }
 
 func NewTestController(name string,
-	operatorClient *clientV1alpha1.ExampleV1Alpha1Client,
+	operatorClient *clientV1alpha1.ExampleV1alpha1Client,
 	kubeclient kubernetes.Interface,
 	deployInformer appsinformersv1.DeploymentInformer,
 	recorder events.Recorder,
+	operatorInformer opInformer.ProjectInformer,
 	ns string) factory.Controller {
 	c := &TestController{
 		name:           name,
@@ -43,13 +45,13 @@ func NewTestController(name string,
 		namespace:      ns,
 	}
 
-	return factory.New().WithInformers(deployInformer.Informer()).WithSync(c.sync).ResyncEvery(time.Minute).ToController(c.name, recorder.WithComponentSuffix(strings.ToLower(name)+"-deployment-controller-"))
+	return factory.New().WithInformers(deployInformer.Informer(), operatorInformer.Informer()).WithSync(c.sync).ResyncEvery(time.Minute).ToController(c.name, recorder.WithComponentSuffix(strings.ToLower(name)+"-deployment-controller-"))
 }
 
 func (c *TestController) sync(ctx context.Context, syncContext factory.SyncContext) error {
 
 	fmt.Println("reconciling************")
-	project, err := c.operatorClient.Projects(c.namespace).Get(c.name, metav1.GetOptions{})
+	project, err := c.operatorClient.Projects(c.namespace).Get(ctx, c.name, metav1.GetOptions{})
 	if err != nil {
 		if errors.IsNotFound(err) {
 			fmt.Println("project resource not found. Ignoring and reconciling again since object maybe deleted")

@@ -4,11 +4,14 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"time"
 
 	"github.com/openshift/library-go/pkg/operator/events"
-	"github.com/varshaprasad96/custom-crd-operator/api/types/v1alpha1"
-	clientV1alpha1 "github.com/varshaprasad96/custom-crd-operator/clientset/v1alpha1"
 	"github.com/varshaprasad96/custom-crd-operator/controller"
+	"github.com/varshaprasad96/custom-crd-operator/pkg/apis/example.com/v1alpha1"
+	operatorversionedclient "github.com/varshaprasad96/custom-crd-operator/pkg/generated/clientset/versioned"
+	clientV1alpha1 "github.com/varshaprasad96/custom-crd-operator/pkg/generated/clientset/versioned/typed/example.com/v1alpha1"
+	opInformer "github.com/varshaprasad96/custom-crd-operator/pkg/generated/informers/externalversions"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	coreinformers "k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
@@ -42,7 +45,12 @@ func main() {
 		panic(err)
 	}
 
-	res, err := clientSet.Projects("default").List(metav1.ListOptions{})
+	operatorConfigClient, err := operatorversionedclient.NewForConfig(cfg)
+	if err != nil {
+		panic(err)
+	}
+
+	res, err := clientSet.Projects("default").List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		panic(err)
 	}
@@ -57,14 +65,20 @@ func main() {
 		panic(err)
 	}
 
+	projectInformer := opInformer.NewSharedInformerFactoryWithOptions(
+		operatorConfigClient,
+		time.Minute,
+	)
+
 	ctx := context.TODO()
 	coreInformerFactory := coreinformers.NewSharedInformerFactory(kubeclient, 0)
-	testController := controller.NewTestController("example-project", clientSet, kubeclient, coreInformerFactory.Apps().V1().Deployments(), events.NewInMemoryRecorder("memcached"), "default")
+	testController := controller.NewTestController("example-project", clientSet, kubeclient, coreInformerFactory.Apps().V1().Deployments(), events.NewInMemoryRecorder("memcached"), projectInformer.Example().V1alpha1().Projects(), "default")
 
 	for _, informer := range []interface {
 		Start(stopCh <-chan struct{})
 	}{
 		coreInformerFactory,
+		projectInformer,
 	} {
 		informer.Start(ctx.Done())
 	}
