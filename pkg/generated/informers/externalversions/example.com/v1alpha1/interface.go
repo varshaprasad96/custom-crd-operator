@@ -24,8 +24,8 @@ import (
 
 // Interface provides access to all the informers in this group version.
 type Interface interface {
-	// Projects returns a ProjectInformer.
-	Projects() ProjectInformer
+	// Memcacheds returns a MemcachedInformer.
+	Memcacheds() MemcachedInformer
 }
 
 type version struct {
@@ -39,7 +39,7 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 	return &version{factory: f, namespace: namespace, tweakListOptions: tweakListOptions}
 }
 
-// Projects returns a ProjectInformer.
-func (v *version) Projects() ProjectInformer {
-	return &projectInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+// Memcacheds returns a MemcachedInformer.
+func (v *version) Memcacheds() MemcachedInformer {
+	return &memcachedInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }

@@ -28,8 +28,8 @@ func Resource(resource string) schema.GroupResource {
 
 func addknownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(SchemeGroupVersion,
-		&Project{},
-		&ProjectList{})
+		&Memcached{},
+		&MemcachedList{})
 
 	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
 	return nil

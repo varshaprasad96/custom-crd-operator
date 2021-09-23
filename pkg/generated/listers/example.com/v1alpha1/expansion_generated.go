@@ -18,10 +18,10 @@ limitations under the License.
 
 package v1alpha1
 
-// ProjectListerExpansion allows custom methods to be added to
-// ProjectLister.
-type ProjectListerExpansion interface{}
+// MemcachedListerExpansion allows custom methods to be added to
+// MemcachedLister.
+type MemcachedListerExpansion interface{}
 
-// ProjectNamespaceListerExpansion allows custom methods to be added to
-// ProjectNamespaceLister.
-type ProjectNamespaceListerExpansion interface{}
+// MemcachedNamespaceListerExpansion allows custom methods to be added to
+// MemcachedNamespaceLister.
+type MemcachedNamespaceListerExpansion interface{}

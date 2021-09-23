@@ -28,8 +28,8 @@ type FakeExampleV1alpha1 struct {
 	*testing.Fake
 }
 
-func (c *FakeExampleV1alpha1) Projects(namespace string) v1alpha1.ProjectInterface {
-	return &FakeProjects{c, namespace}
+func (c *FakeExampleV1alpha1) Memcacheds(namespace string) v1alpha1.MemcachedInterface {
+	return &FakeMemcacheds{c, namespace}
 }
 
 // RESTClient returns a RESTClient that is used to communicate

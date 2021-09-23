@@ -26,7 +26,7 @@ import (
 
 type ExampleV1alpha1Interface interface {
 	RESTClient() rest.Interface
-	ProjectsGetter
+	MemcachedsGetter
 }
 
 // ExampleV1alpha1Client is used to interact with features provided by the example.com group.
@@ -34,8 +34,8 @@ type ExampleV1alpha1Client struct {
 	restClient rest.Interface
 }
 
-func (c *ExampleV1alpha1Client) Projects(namespace string) ProjectInterface {
-	return newProjects(c, namespace)
+func (c *ExampleV1alpha1Client) Memcacheds(namespace string) MemcachedInterface {
+	return newMemcacheds(c, namespace)
 }
 
 // NewForConfig creates a new ExampleV1alpha1Client for the given config.

@@ -32,59 +32,59 @@ import (
 	cache "k8s.io/client-go/tools/cache"
 )
 
-// ProjectInformer provides access to a shared informer and lister for
-// Projects.
-type ProjectInformer interface {
+// MemcachedInformer provides access to a shared informer and lister for
+// Memcacheds.
+type MemcachedInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.ProjectLister
+	Lister() v1alpha1.MemcachedLister
 }
 
-type projectInformer struct {
+type memcachedInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
 	namespace        string
 }
 
-// NewProjectInformer constructs a new informer for Project type.
+// NewMemcachedInformer constructs a new informer for Memcached type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewProjectInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredProjectInformer(client, namespace, resyncPeriod, indexers, nil)
+func NewMemcachedInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredMemcachedInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredProjectInformer constructs a new informer for Project type.
+// NewFilteredMemcachedInformer constructs a new informer for Memcached type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredProjectInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredMemcachedInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.ExampleV1alpha1().Projects(namespace).List(context.TODO(), options)
+				return client.ExampleV1alpha1().Memcacheds(namespace).List(context.TODO(), options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.ExampleV1alpha1().Projects(namespace).Watch(context.TODO(), options)
+				return client.ExampleV1alpha1().Memcacheds(namespace).Watch(context.TODO(), options)
 			},
 		},
-		&examplecomv1alpha1.Project{},
+		&examplecomv1alpha1.Memcached{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *projectInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredProjectInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *memcachedInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredMemcachedInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *projectInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&examplecomv1alpha1.Project{}, f.defaultInformer)
+func (f *memcachedInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&examplecomv1alpha1.Memcached{}, f.defaultInformer)
 }
 
-func (f *projectInformer) Lister() v1alpha1.ProjectLister {
-	return v1alpha1.NewProjectLister(f.Informer().GetIndexer())
+func (f *memcachedInformer) Lister() v1alpha1.MemcachedLister {
+	return v1alpha1.NewMemcachedLister(f.Informer().GetIndexer())
 }
