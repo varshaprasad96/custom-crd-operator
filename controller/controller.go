@@ -8,6 +8,7 @@ import (
 
 	"github.com/openshift/library-go/pkg/controller/factory"
 	"github.com/openshift/library-go/pkg/operator/events"
+	log "github.com/sirupsen/logrus"
 	"github.com/varshaprasad96/custom-crd-operator/pkg/apis/example.com/v1alpha1"
 	clientV1alpha1 "github.com/varshaprasad96/custom-crd-operator/pkg/generated/clientset/versioned/typed/example.com/v1alpha1"
 	opInformer "github.com/varshaprasad96/custom-crd-operator/pkg/generated/informers/externalversions/example.com/v1alpha1"
@@ -34,7 +35,7 @@ func NewTestController(name string,
 	kubeclient kubernetes.Interface,
 	deployInformer appsinformersv1.DeploymentInformer,
 	recorder events.Recorder,
-	operatorInformer opInformer.ProjectInformer,
+	operatorInformer opInformer.MemcachedInformer,
 	ns string) factory.Controller {
 	c := &TestController{
 		name:           name,
@@ -45,26 +46,29 @@ func NewTestController(name string,
 		namespace:      ns,
 	}
 
+	// Create a new factory which runs the controller. Syncing it for periodically for every minute (which is not necessary).
 	return factory.New().WithInformers(deployInformer.Informer(), operatorInformer.Informer()).WithSync(c.sync).ResyncEvery(time.Minute).ToController(c.name, recorder.WithComponentSuffix(strings.ToLower(name)+"-deployment-controller-"))
 }
 
+// sync contains the logic of the reconciler.
 func (c *TestController) sync(ctx context.Context, syncContext factory.SyncContext) error {
 
-	fmt.Println("reconciling************")
-	project, err := c.operatorClient.Projects(c.namespace).Get(ctx, c.name, metav1.GetOptions{})
+	log.Info("*********** reconciling **************")
+	memcached, err := c.operatorClient.Memcacheds(c.namespace).Get(ctx, c.name, metav1.GetOptions{})
 	if err != nil {
 		if errors.IsNotFound(err) {
-			fmt.Println("project resource not found. Ignoring and reconciling again since object maybe deleted")
+			log.Error("memcached resource not found. Ignoring and reconciling again since object maybe deleted")
 			return nil
 		}
-		fmt.Println("failed to get project")
+		log.Error("failed to get memcached")
 		return nil
 	}
 
+	// if a deployment for memcached is not found create a new one.
 	found, err := c.kubeclient.AppsV1().Deployments(c.namespace).Get(ctx, c.name, v1.GetOptions{})
 	if err != nil && errors.IsNotFound(err) {
-		dep := c.deploymentForProject(project)
-		fmt.Println("creating new deployment")
+		dep := c.deploymentForProject(memcached)
+		log.Info("creating new deployment")
 		_, err := c.kubeclient.AppsV1().Deployments(c.namespace).Create(ctx, dep, metav1.CreateOptions{})
 		if err != nil {
 			fmt.Println(err)
@@ -75,8 +79,10 @@ func (c *TestController) sync(ctx context.Context, syncContext factory.SyncConte
 		fmt.Println(err)
 	}
 
-	size := project.Spec.Replicas
+	// if the number of replicas are not same the size specified in the spec, reconcile accordingly.
+	size := memcached.Spec.Size
 	if *found.Spec.Replicas != size {
+		log.Info("Difference in number of replicas, reconciling again")
 		found.Spec.Replicas = &size
 		_, err := c.kubeclient.AppsV1().Deployments(c.namespace).Update(ctx, found, v1.UpdateOptions{})
 		if err != nil {
@@ -88,9 +94,10 @@ func (c *TestController) sync(ctx context.Context, syncContext factory.SyncConte
 	return nil
 }
 
-func (r *TestController) deploymentForProject(m *v1alpha1.Project) *appsv1.Deployment {
+// Retuen deployment template to create for memcached.
+func (r *TestController) deploymentForProject(m *v1alpha1.Memcached) *appsv1.Deployment {
 	ls := labelsForMemcached(m.Name)
-	replica := m.Spec.Replicas
+	replica := m.Spec.Size
 
 	dep := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{

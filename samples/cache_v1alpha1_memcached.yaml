@@ -1,0 +1,8 @@
+apiVersion: example.com/v1alpha1
+kind: Memcached
+metadata:
+  name: memcached-sample
+  namespace: "default"
+spec:
+  # Add fields here
+  size: 4
