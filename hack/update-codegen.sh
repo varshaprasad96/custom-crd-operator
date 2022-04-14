@@ -28,15 +28,15 @@ export execDir="/Users/vnarsing/go/src/github.com/code-generator"
 
 
 
-"${execDir}"/generate-groups.sh "client,informer,lister" \
-  github.com/example-inc/lib-go-plugin-operator/generated github.com/example-inc/lib-go-plugin-operator \
-  api:v1alpha1 \
-  --output-base "$(dirname "${BASH_SOURCE[0]}")/../../.." \
-  --go-header-file "${execDir}"/hack/boilerplate.go.txt
+# "${execDir}"/generate-groups.sh "client,informer,lister" \
+#   github.com/example-inc/lib-go-plugin-operator/generated github.com/example-inc/lib-go-plugin-operator \
+#   api:v1alpha1 \
+#   --output-base "$(dirname "${BASH_SOURCE[0]}")/../../.." \
+#   --go-header-file "${execDir}"/hack/boilerplate.go.txt
 
 
-"${execDir}"/generate-groups.sh "client,informer,lister" \
-  github.com/example-inc/lib-go-plugin-operator/api/generated github.com/example-inc/lib-go-plugin-operator/api \
-  cache.my.domain:v1alpha1 \
-  --output-base "$(dirname "${BASH_SOURCE[0]}")/../../.." \
-  --go-header-file "${execDir}"/hack/boilerplate.go.txt
+# "${execDir}"/generate-groups.sh "client,informer,lister" \
+#   github.com/example-inc/lib-go-plugin-operator/api/generated github.com/example-inc/lib-go-plugin-operator/api \
+#   cache.my.domain:v1alpha1 \
+#   --output-base "$(dirname "${BASH_SOURCE[0]}")/../../.." \
+#   --go-header-file "${execDir}"/hack/boilerplate.go.txt
