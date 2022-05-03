@@ -19,7 +19,7 @@ limitations under the License.
 package fake
 
 import (
-	examplev1alpha1 "github.com/varshaprasad96/custom-crd-operator/pkg/apis/example.com/v1alpha1"
+	examplev1alpha1 "github.com/varshaprasad96/custom-crd-operator/pkg/apis/example/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"

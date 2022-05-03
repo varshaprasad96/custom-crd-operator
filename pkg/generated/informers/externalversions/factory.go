@@ -24,7 +24,7 @@ import (
 	time "time"
 
 	versioned "github.com/varshaprasad96/custom-crd-operator/pkg/generated/clientset/versioned"
-	examplecom "github.com/varshaprasad96/custom-crd-operator/pkg/generated/informers/externalversions/example.com"
+	example "github.com/varshaprasad96/custom-crd-operator/pkg/generated/informers/externalversions/example"
 	internalinterfaces "github.com/varshaprasad96/custom-crd-operator/pkg/generated/informers/externalversions/internalinterfaces"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
@@ -172,9 +172,9 @@ type SharedInformerFactory interface {
 	ForResource(resource schema.GroupVersionResource) (GenericInformer, error)
 	WaitForCacheSync(stopCh <-chan struct{}) map[reflect.Type]bool
 
-	Example() examplecom.Interface
+	Example() example.Interface
 }
 
-func (f *sharedInformerFactory) Example() examplecom.Interface {
-	return examplecom.New(f, f.namespace, f.tweakListOptions)
+func (f *sharedInformerFactory) Example() example.Interface {
+	return example.New(f, f.namespace, f.tweakListOptions)
 }

@@ -20,8 +20,8 @@ package fake
 
 import (
 	clientset "github.com/varshaprasad96/custom-crd-operator/pkg/generated/clientset/versioned"
-	examplev1alpha1 "github.com/varshaprasad96/custom-crd-operator/pkg/generated/clientset/versioned/typed/example.com/v1alpha1"
-	fakeexamplev1alpha1 "github.com/varshaprasad96/custom-crd-operator/pkg/generated/clientset/versioned/typed/example.com/v1alpha1/fake"
+	examplev1alpha1 "github.com/varshaprasad96/custom-crd-operator/pkg/generated/clientset/versioned/typed/example/v1alpha1"
+	fakeexamplev1alpha1 "github.com/varshaprasad96/custom-crd-operator/pkg/generated/clientset/versioned/typed/example/v1alpha1/fake"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/discovery"
