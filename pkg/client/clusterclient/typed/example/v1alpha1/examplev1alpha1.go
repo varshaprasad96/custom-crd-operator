@@ -36,18 +36,22 @@ import (
 )
 
 type WrappedExampleV1alpha1 struct {
-	Cluster  logicalcluster.LogicalCluster
-	Delegate examplev1alpha1.ExampleV1alpha1Interface
+	cluster  logicalcluster.LogicalCluster
+	delegate examplev1alpha1.ExampleV1alpha1Interface
+}
+
+func New(cluster logicalcluster.LogicalCluster, delegate examplev1alpha1.ExampleV1alpha1Interface) *WrappedExampleV1alpha1{
+	return &WrappedExampleV1alpha1{cluster: cluster, delegate: delegate}
 }
 
 func (w *WrappedExampleV1alpha1) RESTClient() rest.Interface {
-	return w.Delegate.RESTClient()
+	return w.delegate.RESTClient()
 }
 
 func (w *WrappedExampleV1alpha1) Memcacheds(namespace string) examplev1alpha1.MemcachedInterface {
 	return &wrappedMemcached{
-		cluster:  w.Cluster,
-		delegate: w.Delegate.Memcacheds(namespace),
+		cluster:  w.cluster,
+		delegate: w.delegate.Memcacheds(namespace),
 	}
 }
 

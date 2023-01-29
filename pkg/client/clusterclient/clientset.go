@@ -74,8 +74,5 @@ func (w *wrappedInterface) Discovery() discovery.DiscoveryInterface {
 }
 
 func (w *wrappedInterface) ExampleV1alpha1() examplev1alpha1.ExampleV1alpha1Interface {
-	return &examplev1alpha1Client.WrappedExampleV1alpha1{
-		Cluster:  w.cluster,
-		Delegate: w.delegate.ExampleV1alpha1(),
-	}
+	return examplev1alpha1Client.New(w.cluster, w.delegate.ExampleV1alpha1())
 }
